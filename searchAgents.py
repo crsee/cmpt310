@@ -334,7 +334,7 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
+        print (state)
         successors = []
         currentPosition = state[0]
         corners_found = state[1]
@@ -351,15 +351,15 @@ class CornersProblem(search.SearchProblem):
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
-            templist = [] #this contains the visited corners
+            temp_corners = [] #this contains the visited corners
+            
             if not hitsWall:   #if not self.walls[nextx][nexty]:
-                cost = self.costFn(nextx,nexty)
-                nextState = (nextx,nexty)
-                templist.extend(corners_found)
-                if nextState in self.corners and nextState not in templist:
-                    templist.append(nextState)
-                    templist.sort() #sort the list to make sure they are all consistent: ie [(1,2),(6,1)] would be the same as [(6,1),(1,2)] as someone suggested in piazzo
-                successor = ((nextState, templist), action, cost)
+                nextState = (nextx,nexty) #taken from position seach
+                temp_corners.extend(corners_found) #similar to deep copy extend the list into a new one
+                if nextState in self.corners and nextState not in temp_corners:
+                    temp_corners.append(nextState)
+                    temp_corners.sort() #sort the list to make sure they are all consistent: ie [(1,2),(6,1)] would be the same as [(6,1),(1,2)] as someone suggested in piazzo
+                successor = ((nextState, temp_corners), action)
                 successors.append(successor)
             #if not hitsWall:
             #    successorVisitedCorners = list(visitedCorners)
@@ -406,6 +406,25 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    currentPosition = state[0]
+    corners_found = state[1]
+    #((24, 12), [(1, 1), (1, 12), (28, 1)]) sample state
+    #Find distance to each corner left
+    set_found = set(corners_found)
+    set_corners = set(problem.corners)
+    diff = set_corners - set_found
+    total = 0
+    #print (state) 
+    if len(diff) > 0:
+        for x in diff:
+            diffx = abs(currentPosition[0] - x[0])
+            diffy = abs(currentPosition[1] - x[1])
+            total = total +diffx+diffy
+    #print (total)
+    return total
+    
+    
+    
 
 
 def mazeDistance(point1, point2, gameState):
