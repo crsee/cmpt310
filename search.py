@@ -163,12 +163,30 @@ def breadthFirstSearch(problem):
      Search the shallowest nodes in the search tree first.
      """
     "*** YOUR CODE HERE ***"
+    #fringe = util.Queue()
+    #fringe.push( (problem.getStartState(), [], []) )
+    #print (problem.getSuccessors(problem.getStartState()))
+    #visited = []
+    #while not fringe.isEmpty():
+    #    node, actions, curCost = fringe.pop()
+#
+    #    if(node not in visited):
+    #        visited.append(node)
+#
+    #        if problem.isGoalState(node):
+    #            return actions
+#
+    #        for child, direction, cost in problem.getSuccessors(node):
+    #            #print (child)
+    #            fringe.push((child, actions+[direction], curCost + [cost]))
+#
+    #return []
 
     bfs_queue = util.Queue()
+    #print(problem.getSuccessors(problem.getStartState()))
     for successor in problem.getSuccessors(problem.getStartState()):
         #essentially we the push tuple = (successor, successor_directions, position_successor_has_visited, successor_count)
         bfs_queue.push((successor[0], [successor[1]], [problem.getStartState()], successor[2]))
-
     while not bfs_queue.isEmpty():
         data = bfs_queue.pop() #current node
         data_dict = {   'curr_pos': data[0], #current position of pacman
@@ -216,7 +234,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     bfs_pqueue = util.PriorityQueue()
     for successor in problem.getSuccessors(problem.getStartState()):
         #essentially we the push tuple = (successor, successor_directions, position_successor_has_visited, successor_count)
-        bfs_pqueue.push((successor[0], [successor[1]], [problem.getStartState()], successor[2]),successor[2])
+        bfs_pqueue.push((successor[0], [successor[1]], [problem.getStartState()], successor[2]),heuristic(problem.getStartState(), problem))
 
     while not bfs_pqueue.isEmpty():
         data = bfs_pqueue.pop() #current node
@@ -243,8 +261,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 temp_visited.extend(data_dict['visited'])
                 temp_visited.append(data_dict['curr_pos'])
                 temp_count = data_dict['total_count'] + cost
+                heuristic_priority = heuristic(coordinates,problem)
                 #data_dict['total_count']: temp_count
-                bfs_pqueue.push((coordinates,temp_dir_list,temp_visited,temp_count), temp_count)
+                bfs_pqueue.push((coordinates,temp_dir_list,temp_visited,temp_count), heuristic_priority)
 
     print ("Mission Failed - pacman died from starvation")
     return []
