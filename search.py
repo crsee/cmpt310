@@ -163,58 +163,30 @@ def breadthFirstSearch(problem):
      Search the shallowest nodes in the search tree first.
      """
     "*** YOUR CODE HERE ***"
-    #fringe = util.Queue()
-    #fringe.push( (problem.getStartState(), [], []) )
-    #print (problem.getSuccessors(problem.getStartState()))
-    #visited = []
-    #while not fringe.isEmpty():
-    #    node, actions, curCost = fringe.pop()
-#
-    #    if(node not in visited):
-    #        visited.append(node)
-#
-    #        if problem.isGoalState(node):
-    #            return actions
-#
-    #        for child, direction, cost in problem.getSuccessors(node):
-    #            #print (child)
-    #            fringe.push((child, actions+[direction], curCost + [cost]))
-#
-    #return []
-
     bfs_queue = util.Queue()
     #print(problem.getSuccessors(problem.getStartState()))
     for successor in problem.getSuccessors(problem.getStartState()):
-        #essentially we the push tuple = (successor, successor_directions, position_successor_has_visited, successor_count)
-        bfs_queue.push((successor[0], [successor[1]], [problem.getStartState()], successor[2]))
+        #essentially we the push tuple = (successor, successor_directions)
+        bfs_queue.push((successor[0], [successor[1]]))
+    visited = [problem.getStartState()]
     while not bfs_queue.isEmpty():
         data = bfs_queue.pop() #current node
         data_dict = {   'curr_pos': data[0], #current position of pacman
-                        'direction': data[1], #direction to move
-                        'visited': data[2], #positions on the map we have visited
-                        'total_count': data[3]} #total cost of steps taken
+                        'direction': data[1]} #direction to move #positions on the map we have visited
 
-        if problem.isGoalState(data[0]):
+        if problem.isGoalState(data_dict['curr_pos']):
             print ('done', data_dict['direction'])
-            print (data_dict['total_count'])
             return data_dict['direction']
 
         for node_data in problem.getSuccessors(data_dict['curr_pos']):
-            #print ('we can choose', nod_data)
             temp_dir_list = [] #reset the list per Successor (if we don't the temp list will fill up with directions from all possible successors)
-            temp_visited = [] # ^^same as above
             coordinates = node_data[0]
             new_dir = node_data[1]
-            cost = node_data[2]
-            if coordinates not in data_dict['visited']:
+            if coordinates not in visited:
+                visited.append(coordinates)
                 temp_dir_list.extend(data_dict['direction'])
                 temp_dir_list.append(new_dir)
-                temp_visited.extend(data_dict['visited'])
-                temp_visited.append(data_dict['curr_pos'])
-                temp_count = data_dict['total_count'] + cost
-                #data_dict['total_count']: temp_count
-                #print ('hi',temp_count)
-                bfs_queue.push((coordinates,temp_dir_list,temp_visited,temp_count))
+                bfs_queue.push((coordinates, temp_dir_list))
 
     print ("Mission Failed - pacman died from starvation")
     return []
