@@ -297,7 +297,8 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-
+        #print ('hi')
+        self.corners_found = []
 
     def getStartState(self):
         """
@@ -305,9 +306,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        corners_found = []
-        print ('hjsidhsid')
-        return (self.startingPosition, corners_found)
+        return (self.startingPosition, self.corners_found)
 
 
     def isGoalState(self, state):
@@ -315,7 +314,7 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        node = state[0]
+        #print(state[0])
         corners_found = state[1]
         set_corners = set(self.corners)
         set_found = set(corners_found)
