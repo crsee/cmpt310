@@ -231,3 +231,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
+
+#Part 3 Feedback
+# I like the course so far, Friday written assignments are getting a lot harder, but the inclass discussions are really good.
+# started off slow and had to change my A* and breadth search implementation once the heuristics were introduced.
+# Maybe 6-8 hours?
+# Thanks
