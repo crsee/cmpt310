@@ -114,15 +114,19 @@ def depthFirstSearch(problem):
     "*** YOUR CODE HERE ***"
     dfs_stack = util.Stack()
     for successor in problem.getSuccessors(problem.getStartState()):
-        #essentially we the push tuple = (successor, successor_directions, position_successor_has_visited, successor_count)
-        dfs_stack.push((successor[0], [successor[1]], [problem.getStartState()], successor[2]))
+        #essentially we the push tuple = (successor, successor_directions)
+        dfs_stack.push((successor[0], [successor[1]])) #((successor[0], [successor[1]], [problem.getStartState()], successor[2]))
+    visited = [problem.getStartState()]
 
     while not dfs_stack.isEmpty():
-        data = dfs_stack.pop() #current node
+        data = dfs_stack.pop() #current state
         data_dict = {   'curr_pos': data[0], #current position of pacman
-                        'direction': data[1], #direction to move
-                        'visited': data[2], #positions on the map we have visited
-                        'total_count': data[3]} #total cost of steps taken
+                        'direction': data[1]} #direction to move
+
+                        # Getting rid of 'visited' and 'total_count', instead using a list to store visited outside of the loop
+                        # problem with 'visited' was noticed when using the heuristics, and decided to remove count since it isn't used
+                        # 'visited': data[2], #positions on the map we have visited
+                        # 'total_count': data[3]} #total cost of steps taken
 
         if problem.isGoalState(data_dict['curr_pos']):
             #print ('done', data_dict['direction'])
@@ -131,17 +135,18 @@ def depthFirstSearch(problem):
 
         for node_data in problem.getSuccessors(data_dict['curr_pos']):
             temp_dir_list = [] #reset the list per Successor (if we don't the temp list will fill up with directions from all possible successors)
-            temp_visited = [] # ^^same as above
+            #temp_visited = [] # ^^same as above
             coordinates = node_data[0]
             new_dir = node_data[1]
-            cost = node_data[2]
-            if coordinates not in data_dict['visited']:
+            #cost = node_data[2]
+            if coordinates not in visited:
+                visited.append(coordinates)
                 temp_dir_list.extend(data_dict['direction']) #extend to make local "copies" of the list
                 temp_dir_list.append(new_dir)
-                temp_visited.extend(data_dict['visited'])
-                temp_visited.append(data_dict['curr_pos'])
-                temp_count = data_dict['total_count'] + cost
-                dfs_stack.push((coordinates,temp_dir_list,temp_visited,temp_count))
+                #temp_visited.extend(data_dict['visited'])
+                #temp_visited.append(data_dict['curr_pos'])
+                #temp_count = data_dict['total_count'] + cost
+                dfs_stack.push((coordinates,temp_dir_list)) #dfs_stack.push((coordinates,temp_dir_list,temp_visited,temp_count))
 
     print ("Mission Failed - pacman died from starvation")
     return []
@@ -151,10 +156,10 @@ def breadthFirstSearch(problem):
      Search the shallowest nodes in the search tree first.
      """
     "*** YOUR CODE HERE ***"
-    #Had to change from depth first implementation
     #There were errors with data_dict['visited'] when using the corners and heuristics
     #Therefore I changed the visited list to be a global variable
     #Also dropped the count in the data_dict because it wasnt needed for the requirements
+    #Noticed the problem here and revised my depth-first search to reflect.
 
     bfs_queue = util.Queue()
     for successor in problem.getSuccessors(problem.getStartState()):
@@ -204,7 +209,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     visited = [problem.getStartState()]
 
     while not bfs_pqueue.isEmpty():
-        data = bfs_pqueue.pop() #current node
+        data = bfs_pqueue.pop() #current state
         data_dict = {   'curr_pos': data[0], #current position of pacman
                         'direction': data[1]}# #direction to move
 
@@ -235,5 +240,6 @@ astar = aStarSearch
 #Part 3 Feedback
 # I like the course so far, Friday written assignments are getting a lot harder, but the inclass discussions are really good.
 # started off slow and had to change my A* and breadth search implementation once the heuristics were introduced.
+# then decided to change my depth-first to reflect the changes in my A* and breadth-first
 # Maybe 6-8 hours?
 # Thanks
