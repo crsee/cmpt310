@@ -297,7 +297,6 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        #print ('hi')
         self.corners_found = []
 
     def getStartState(self):
@@ -314,15 +313,17 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        #print(state[0])
+        #print(state)
+        #Taking the set intersect of the two sets corners_found and corners
+        #if the len of the inter is 4 then Pass - Done
         corners_found = state[1]
         set_corners = set(self.corners)
         set_found = set(corners_found)
         inter = set_corners&set_found
         if len(inter) == 4:
-            #print ('hi', inter, len(inter))
             return True
-        return False
+        else:
+            return False
 
     def getSuccessors(self, state):
         """
@@ -334,7 +335,7 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-        print (state)
+        #print (state)
         successors = []
         currentPosition = state[0]
         corners_found = state[1]
@@ -352,23 +353,17 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
             temp_corners = [] #this contains the visited corners
-            
+
             if not hitsWall:   #if not self.walls[nextx][nexty]:
-                nextState = (nextx,nexty) #taken from position seach
+                nextState = (nextx,nexty) #taken from positionSeach variable for the next state
+                #cost = self.costFn(nextState) #don't need cost
                 temp_corners.extend(corners_found) #similar to deep copy extend the list into a new one
                 if nextState in self.corners and nextState not in temp_corners:
                     temp_corners.append(nextState)
                     temp_corners.sort() #sort the list to make sure they are all consistent: ie [(1,2),(6,1)] would be the same as [(6,1),(1,2)] as someone suggested in piazzo
                 successor = ((nextState, temp_corners), action)
                 successors.append(successor)
-            #if not hitsWall:
-            #    successorVisitedCorners = list(visitedCorners)
-            #    next_node = (nextx, nexty)
-            #    if next_node in self.corners:
-            #        if not next_node in successorVisitedCorners:
-            #            successorVisitedCorners.append( next_node )
-            #    successor = ((next_node, successorVisitedCorners), action, 1)
-            #    successors.append(successor)
+
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -411,20 +406,17 @@ def cornersHeuristic(state, problem):
     #((24, 12), [(1, 1), (1, 12), (28, 1)]) sample state
     #Find distance to each corner left
     set_found = set(corners_found)
-    set_corners = set(problem.corners)
+    set_corners = set(corners)
     diff = set_corners - set_found
     total = 0
-    #print (state) 
-    if len(diff) > 0:
+    #print (state)
+    if len(diff) > 0: #if we haven't found all the corners
         for x in diff:
             diffx = abs(currentPosition[0] - x[0])
             diffy = abs(currentPosition[1] - x[1])
-            total = total +diffx+diffy
+            total = total + diffx + diffy
     #print (total)
     return total
-    
-    
-    
 
 
 def mazeDistance(point1, point2, gameState):

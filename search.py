@@ -112,11 +112,6 @@ def depthFirstSearch(problem):
 
     """
     "*** YOUR CODE HERE ***"
-    #print ( problem.getStartState() )
-    #print ( problem.getSuccessors((5,5)))
-    #print ( problem.isGoalState(problem.getStartState()) )
-    #print ( problem.getSuccessors(problem.getStartState()) )
-
     dfs_stack = util.Stack()
     for successor in problem.getSuccessors(problem.getStartState()):
         #essentially we the push tuple = (successor, successor_directions, position_successor_has_visited, successor_count)
@@ -128,31 +123,24 @@ def depthFirstSearch(problem):
                         'direction': data[1], #direction to move
                         'visited': data[2], #positions on the map we have visited
                         'total_count': data[3]} #total cost of steps taken
-        #print ('action', data_dict['curr_pos'])
-        #print ('direction', data_dict['direction'])
-        #print ('visited', data_dict['visited'])
-        #print ('cost', data_dict['total_count'])
 
-        if problem.isGoalState(data[0]):
+        if problem.isGoalState(data_dict['curr_pos']):
             #print ('done', data_dict['direction'])
-            print ('count',data_dict['total_count'])
+            #print ('count',data_dict['total_count'])
             return data_dict['direction']
 
         for node_data in problem.getSuccessors(data_dict['curr_pos']):
-            #print ('we can choose', nod_data)
             temp_dir_list = [] #reset the list per Successor (if we don't the temp list will fill up with directions from all possible successors)
             temp_visited = [] # ^^same as above
             coordinates = node_data[0]
             new_dir = node_data[1]
             cost = node_data[2]
             if coordinates not in data_dict['visited']:
-                temp_dir_list.extend(data_dict['direction'])
+                temp_dir_list.extend(data_dict['direction']) #extend to make local "copies" of the list
                 temp_dir_list.append(new_dir)
                 temp_visited.extend(data_dict['visited'])
                 temp_visited.append(data_dict['curr_pos'])
                 temp_count = data_dict['total_count'] + cost
-                #data_dict['total_count']= temp_count
-                #print ('hi',temp_count)
                 dfs_stack.push((coordinates,temp_dir_list,temp_visited,temp_count))
 
     print ("Mission Failed - pacman died from starvation")
@@ -163,19 +151,24 @@ def breadthFirstSearch(problem):
      Search the shallowest nodes in the search tree first.
      """
     "*** YOUR CODE HERE ***"
+    #Had to change from depth first implementation
+    #There were errors with data_dict['visited'] when using the corners and heuristics
+    #Therefore I changed the visited list to be a global variable
+    #Also dropped the count in the data_dict because it wasnt needed for the requirements
+
     bfs_queue = util.Queue()
-    #print(problem.getSuccessors(problem.getStartState()))
     for successor in problem.getSuccessors(problem.getStartState()):
-        #essentially we the push tuple = (successor, successor_directions)
+        #initially we are pushing the successors = (successor, successor_directions)
         bfs_queue.push((successor[0], [successor[1]]))
-    visited = [problem.getStartState()]
+    visited = [problem.getStartState()] #initially containing the startstate
+
     while not bfs_queue.isEmpty():
-        data = bfs_queue.pop() #current node
+        data = bfs_queue.pop() #current state
         data_dict = {   'curr_pos': data[0], #current position of pacman
-                        'direction': data[1]} #direction to move #positions on the map we have visited
+                        'direction': data[1]} #direction to move
 
         if problem.isGoalState(data_dict['curr_pos']):
-            print ('done', data_dict['direction'])
+            #print ('done', data_dict['direction'])
             return data_dict['direction']
 
         for node_data in problem.getSuccessors(data_dict['curr_pos']):
@@ -203,40 +196,30 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Question 1.3
     Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    print (problem.getSuccessors(problem.getStartState()))
+
     bfs_pqueue = util.PriorityQueue()
     for successor in problem.getSuccessors(problem.getStartState()):
-        #essentially we the push tuple = (successor, successor_directions, position_successor_has_visited, successor_count)
-        bfs_pqueue.push((successor[0], [successor[1]]), heuristic(problem.getStartState(), problem)) # [problem.getStartState()], successor[2]),heuristic(problem.getStartState(), problem))
+        #initially we are pushing the successors = ((successor, successor_directions),heuristic)
+        bfs_pqueue.push((successor[0], [successor[1]]), heuristic(problem.getStartState(), problem))
     visited = [problem.getStartState()]
+
     while not bfs_pqueue.isEmpty():
         data = bfs_pqueue.pop() #current node
         data_dict = {   'curr_pos': data[0], #current position of pacman
-                        'direction': data[1]}#, #direction to move
-                        #'visited': data[2], #positions on the map we have visited
-                        #'total_count': data[3]} #total cost of steps taken
+                        'direction': data[1]}# #direction to move
 
-        if problem.isGoalState(data[0]):
-            print ('done', data_dict['direction'])
-            #print (data_dict['total_count'])
+        if problem.isGoalState(data_dict['curr_pos']):
             return data_dict['direction']
 
         for node_data in problem.getSuccessors(data_dict['curr_pos']):
-            #print ('we can choose', nod_data)
             temp_dir_list = [] #reset the list per Successor (if we don't the temp list will fill up with directions from all possible successors)
-            #temp_visited = [] # ^^same as above
             coordinates = node_data[0]
             new_dir = node_data[1]
-            #cost = node_data[2]
             if coordinates not in visited:
                 visited.append(coordinates)
                 temp_dir_list.extend(data_dict['direction'])
                 temp_dir_list.append(new_dir)
-                #temp_visited.extend(data_dict['visited'])
-                #temp_visited.append(data_dict['curr_pos'])
-                #temp_count = data_dict['total_count'] + cost
                 heuristic_priority = heuristic(coordinates,problem)
-                #data_dict['total_count']: temp_count
                 bfs_pqueue.push((coordinates,temp_dir_list), heuristic_priority)
 
     print ("Mission Failed - pacman died from starvation")
