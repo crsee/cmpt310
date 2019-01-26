@@ -361,6 +361,7 @@ class CornersProblem(search.SearchProblem):
                 if nextState in self.corners and nextState not in temp_corners:
                     temp_corners.append(nextState)
                     temp_corners.sort() #sort the list to make sure they are all consistent: ie [(1,2),(6,1)] would be the same as [(6,1),(1,2)] as someone suggested in piazzo
+                    #sorting drops my nodes expanded by 200 for tiny and 500 for medium :D
                 successor = ((nextState, temp_corners), action)
                 successors.append(successor)
 
